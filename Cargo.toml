@@ -1,0 +1,24 @@
+[package]
+name = "split_read"
+version = "0.1.0"
+authors = ["Yehuthi <yehuthith@gmail.com>"]
+edition = "2021"
+keywords = ["read", "io", "split", "separate", "stream"]
+categories = ["parsing"]
+repository = "https://github.com/yehuthi/split_read"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+serde = { version = "1.0.144", features = ["derive"], optional = true }
+
+[dev-dependencies]
+criterion = "0.4.0"
+proptest = "1.0.0"
+
+[[bench]]
+name = "compare"
+harness = false
+
+[[bench]]
+name = "buf_size"
+harness = false

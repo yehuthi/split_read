@@ -1,5 +1,6 @@
 [package]
 name = "split_read"
+description = "split std::io::Read streams by a separator"
 version = "0.1.0"
 authors = ["Yehuthi <yehuthith@gmail.com>"]
 edition = "2021"

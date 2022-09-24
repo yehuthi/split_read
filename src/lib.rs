@@ -47,7 +47,8 @@ pub struct Split<const BUF_SZ: usize, T> {
     /// up to the `end` field, i.e. it's garbage from previous iterations.
     yielded: u8,
 
-    /// The exclusive end of the buffer data. Data past it is garbage from pervious iterations.
+    /// The exclusive end of the buffer data.
+    /// Data on & past it is garbage from pervious iterations.
     end: u8,
 
     /// The buffer.

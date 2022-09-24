@@ -1,0 +1,41 @@
+0001  SafeNet (wrong ID)
+0010  Allied Telesis, Inc (Wrong ID)
+# This is a relabelled RTL-8139
+	8139  AT-2500TX V3 Ethernet
+0014  Loongson Technology LLC
+	7a00  Hyper Transport Bridge Controller
+	7a02  APB (Advanced Peripheral Bus) Controller
+	7a03  Gigabit Ethernet Controller
+	7a04  OTG USB Controller
+	7a05  Vivante GPU (Graphics Processing Unit)
+	7a06  DC (Display Controller)
+	7a07  HDA (High Definition Audio) Controller
+	7a08  SATA AHCI Controller
+	7a09  PCI-to-PCI Bridge
+	7a0b  SPI Controller
+	7a0c  LPC Controller
+	7a0f  DMA (Direct Memory Access) Controller
+# Found on some boards with two sockets
+	7a10  Hyper Transport Bridge Controller
+	7a14  EHCI USB Controller
+	7a15  Vivante GPU (Graphics Processing Unit)
+	7a19  PCI-to-PCI Bridge
+	7a24  OHCI USB Controller
+	7a29  PCI-to-PCI Bridge
+001c  PEAK-System Technik GmbH
+	0001  PCAN-PCI CAN-Bus controller
+		001c 0004  2 Channel CAN Bus SJC1000
+		001c 0005  2 Channel CAN Bus SJC1000 (Optically Isolated)
+003d  Lockheed Martin-Marietta Corp
+# Real TJN ID is e159, but they got it wrong several times --mj
+0059  Tiger Jet Network Inc. (Wrong ID)
+0070  Hauppauge computer works Inc.
+	7801  WinTV HVR-1800 MCE
+0071  Nebula Electronics Ltd.
+0095  Silicon Image, Inc. (Wrong ID)
+	0680  Ultra ATA/133 IDE RAID CONTROLLER CARD
+# Wrong ID used in subsystem ID of the TELES.S0/PCI 2.x ISDN adapter
+00a7  Teles AG (Wrong ID)
+0100  nCipher Security
+0123  General Dynamics
+0128  Dell (wrong ID)

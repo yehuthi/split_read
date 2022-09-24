@@ -45,11 +45,11 @@ pub struct Split<const BUF_SZ: usize, T> {
 
     /// The exclusive end from the start for data considered already yielded, inclusively ceiled
     /// up to the `end` field, i.e. it's garbage from previous iterations.
-    yielded: u8,
+    yielded: usize,
 
     /// The exclusive end of the buffer data.
     /// Data on & past it is garbage from pervious iterations.
-    end: u8,
+    end: usize,
 
     /// The buffer.
     ///
@@ -169,14 +169,14 @@ impl<const BUF_SZ: usize, T: Read> Split<BUF_SZ, T> {
 
     /// Get the next [`Piece`].
     pub fn next_piece(&mut self) -> io::Result<Piece> {
-        let find_sep_in = |s: &[u8], range: Range<u8> | -> Option<usize> {
+        let find_sep_in = |s: &[u8], range: Range<usize> | -> Option<usize> {
             s[range.start as usize..range.end as usize].iter().position(|&b| b == self.sep).map(|i| range.start as usize + i)
         };
 
         // check for newline with existing data
         if let Some(nl) = find_sep_in(&self.buf, self.yielded..self.end) {
             let result = &self.buf[self.yielded as usize..nl];
-            self.yielded = nl as u8 + 1;
+            self.yielded = nl + 1;
             Ok(Piece::Terminal(result))
         } else {
             let size_checked = self.end - self.yielded;
@@ -189,7 +189,7 @@ impl<const BUF_SZ: usize, T: Read> Split<BUF_SZ, T> {
             // fill the remainder of the buffer
             loop {
                 let read = self.inner.read(&mut self.buf[self.end as usize..])?;
-                self.end += read as u8;
+                self.end += read;
 
                 // check for newline again but in the new data if any
                 if read == 0 {
@@ -207,7 +207,7 @@ impl<const BUF_SZ: usize, T: Read> Split<BUF_SZ, T> {
                     }
                 } else if let Some(nl) = find_sep_in(&self.buf, size_checked..self.end) {
                     let result = &self.buf[..nl];
-                    self.yielded = nl as u8 + 1;
+                    self.yielded = nl + 1;
                     break Ok(Piece::Terminal(result))
                 } else {
                     // we read more but still didn't find it, which can be one of two reasons:
@@ -348,6 +348,23 @@ mod test {
         assert_eq!(it.fnext(), Piece::Terminal(b"".as_ref()));
         assert_eq!(it.fnext(), Piece::Terminal(b"a".as_ref()));
         assert_eq!(it.fnext(), Piece::End);
+    }
+
+    #[test]
+    fn test_pciid_sample_lines() {
+        let s = include_bytes!("../test/pciid_sample");
+        let mut s = Split::<2048,_>::bytes_lines(s);
+        let mut terms = 0;
+        let mut parts = 0;
+        loop {
+            match s.next_piece().unwrap() {
+                Piece::Terminal(_) => { terms += 1 },
+                Piece::Partial (_) => { parts += 1 },
+                Piece::End => break,
+            }
+        };
+        assert_eq!(parts, 0);
+        assert_eq!(terms, 41);
     }
 
     /// Used for testing

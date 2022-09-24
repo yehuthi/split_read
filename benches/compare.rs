@@ -33,7 +33,7 @@ fn bench_entry(c: &mut Criterion) {
             bench_std_lines(input)
         }));
         g.bench_with_input(BenchmarkId::new("split_read", input_name), input, |b, input| b.iter(|| {
-            let mut r = split_read::Split::<512,_>::read_lines(input);
+            let mut r = split_read::Split::<256,_>::read_lines(input);
             let mut n = 0usize;
             while let Piece::Terminal(bs) |  Piece::Partial(bs) = r.next_piece().unwrap() { n += bs.len() } 
             n

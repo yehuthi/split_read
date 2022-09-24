@@ -6,10 +6,9 @@
 //!   - [Copy/allocate](Piece::Partial) when you need to.
 //!
 //! # Alternatives
+//! - [🦀 `slice::split`](slice::split) use this instead if you have the entire input in one slice.
 //! - [🦀 `std::io::Lines`](std::io::Lines) makes more sense to use if you need to allocate every line.
 //!   Otherwise it's slower.
-//! - [🦀 `slice::split`](slice::split) convenient if you have the entire input in one slice.
-//!   Faster on tiny inputs, slower on medium or large inputs (faster than [`std::io::Lines`]).
 //! - [📦 `split_by`](https://crates.io/crates/split_by) significantly slower for separating by just
 //!   one byte than any of the mentioned options, but can separate by multiple patterns of multiple
 //!   bytes.
@@ -34,7 +33,7 @@ use std::{io::{Read, self}, ops::Range, fmt::{Debug, Display}, convert::identity
 ///
 /// ## Buffer Size
 /// The first parameter is the buffer size. The ideal value is based on your input, but generally
-/// 512 (or 256 for tiny input) seems to be a good option. 
+/// 512 seems to be a good option. 
 #[derive(Hash, Clone, Copy, PartialEq, PartialOrd, Eq, Ord)]
 pub struct Split<const BUF_SZ: usize, T> {
     /// The inner reader.

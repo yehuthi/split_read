@@ -23,3 +23,7 @@ harness = false
 [[bench]]
 name = "buf_size"
 harness = false
+
+[[bench]]
+name = "pciid_traverse"
+harness = false

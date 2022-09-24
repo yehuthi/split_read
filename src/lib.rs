@@ -19,7 +19,7 @@
 //! 
 
 #![deny(unsafe_code, missing_docs)]
-use std::{io::{Read, self}, ops::Range};
+use std::{io::{Read, self}, ops::Range, fmt::{Debug, Display}, convert::identity};
 
 
 /// A [`Read`](std::io::Read) splitter.
@@ -35,7 +35,7 @@ use std::{io::{Read, self}, ops::Range};
 /// ## Buffer Size
 /// The first parameter is the buffer size. The ideal value is based on your input, but generally
 /// 512 (or 256 for tiny input) seems to be a good option. 
-#[derive(Debug, Hash, Clone, Copy, PartialEq, PartialOrd, Eq, Ord)]
+#[derive(Hash, Clone, Copy, PartialEq, PartialOrd, Eq, Ord)]
 pub struct Split<const BUF_SZ: usize, T> {
     /// The inner reader.
     inner: T,
@@ -58,6 +58,45 @@ pub struct Split<const BUF_SZ: usize, T> {
     buf: [u8; BUF_SZ],
 }
 
+impl<const BUF_SZ: usize, T: Debug> Debug for Split<BUF_SZ, T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        struct BufferDebug<'a>(&'a [u8], usize, usize);
+        impl<'a> Debug for BufferDebug<'a> {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                write!(f, "[")?;
+                for (i, &b) in self.0.iter().enumerate() {
+                    let before_start = i < self.1;
+                    let past_end = i >= self.2;
+                    let ansi = match (before_start, past_end) {
+                        (true, false)  => "4;34",
+                        (false, true)  => "4;31",
+                        (false, false) => "4;32",
+                        (true, true)   => "41",
+                    };
+                    let as_char;
+                    let as_byte;
+                    struct ByteDisplay(u8);
+                    impl Display for ByteDisplay { fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result { write!(f, "<{}>", self.0) } }
+                    write!(f, "\u{1b}[{ansi}m{}\u{1b}[0m", identity::<&dyn Display>(if b.is_ascii() {
+                        as_char = char::from_u32(b as u32).unwrap(); &as_char
+                    } else { as_byte = ByteDisplay(b); &as_byte }))?;
+                }
+                write!(f, "]")?;
+                Ok(())
+            }
+        }
+
+        f
+            .debug_struct("Split")
+            .field("inner", &self.inner)
+            .field("sep", &self.sep)
+            .field("yielded", &self.yielded)
+            .field("end", &self.end)
+            .field("buf", &BufferDebug(&self.buf, self.yielded as usize, self.end as usize))
+            .finish()
+
+    }
+}
 
 /// A [`Split`] read result (from [`Split::next_piece`]).
 #[derive(Debug, Hash, Default, Clone, Copy, PartialEq, PartialOrd, Eq, Ord)]
